@@ -252,16 +252,14 @@
                       class="link list-group-item list-group-item-action"
                       href="https://github.com/Happ-proxy/happ-desktop/releases/latest/download/setup-Happ.x86.exe"
                       target="_blank"
-                      data-lang-ru="Установите приложение"
-                      data-lang-en="Install app"
+                      data-lang-ru="Скачайте приложение"
+                      data-lang-en="Download app"
                     >
-                      Установите приложение
-                    </a>
-                    <span
-                      data-lang-ru="и запустите его."
-                      data-lang-en="and run it."
+                      Скачайте приложение</a><span
+                      data-lang-ru=", установите и запустите его."
+                      data-lang-en=", install and run it."
                     >
-                      и запустите его.
+                      , установите и запустите его.
                     </span>
                   </p>
                   <p>
@@ -539,6 +537,14 @@
         padding: 0 25px 50px 25px;
       }
 
+      body {
+        background-image: url('/static/background.png');
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
+        background-size: cover;
+      }
+
       .subscription li {
         padding-top: 10px;
         padding-bottom: 10px;
@@ -565,7 +571,9 @@
       }        
 
       .accordion-button {
+        background-color: #ffffff;
         font-size: 17px;
+        color: #000000;
       }
 
       .accordion-body .list-group {
@@ -586,7 +594,7 @@
       .link,
       .self-link {
         display: inline;
-        color: rgb(23, 114, 252) !important;
+        color: #1772fc !important;
         transition: color 0.3s ease;
         text-decoration: none;
       }
@@ -615,19 +623,19 @@
 
       .link:visited,
       .self-link:visited {
-        color: rgb(23, 114, 252) !important;
+        color: #1772fc !important;
         text-decoration: none;
       }
 
       #accordionApps .link,
       #accordionApps .self-link {
-        color: rgb(23, 114, 252) !important;
+        color: #1772fc !important;
         text-decoration: none;
       }
 
       #accordionApps .link:visited,
       #accordionApps .self-link:visited {
-        color: rgb(23, 114, 252) !important;
+        color: #1772fc !important;
         text-decoration: none;
       }
 
@@ -646,7 +654,7 @@
         #accordionApps .self-link {
           -webkit-tap-highlight-color: transparent;
           text-decoration: none;
-          color: rgb(23, 114, 252) !important;
+          color: #1772fc !important;
         }
         .copy-btn {
           -webkit-tap-highlight-color: transparent;
@@ -663,10 +671,11 @@
         margin-top: 25px;
         margin-bottom: 25px;
         font-size: 25px;
+        color: #000000;
       }
 
       .accordion-button:not(.collapsed) {
-        background-color: #eaeaea;
+        background-color: #d5f0f2;
         color: var(--bs-accordion-btn-color);
       }
 
@@ -685,8 +694,8 @@
         position: fixed;
         bottom: 50px;
         right: 50px;
-        background-color: #eaeaea;
-        color: #000;
+        background-color: #d5f0f2;
+        color: #000000;
         padding: 10px 20px;
         border-radius: 15px;
         z-index: 1000;
@@ -756,7 +765,7 @@
       }
 
       .language-switcher button.active {
-        background-color: #eaeaea;
+        background-color: #d5f0f2;
       }
     </style>
     <script>
