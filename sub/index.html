@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -22,10 +22,6 @@
     ></script>
   </head>
   <body>
-    <div class="language-switcher">
-      <button onclick="switchLanguage('en')">En</button>
-      <button onclick="switchLanguage('ru')" class="active">Ру</button>
-    </div>
     <div role="main">
       <div class="modules">
         <div class="module">
@@ -741,61 +737,49 @@
           opacity: 0;
         }
       }
-
-      .language-switcher {
-        margin-top: 20px;
-        margin-bottom: -10px;
-        text-align: right;
-      }
-
-      .language-switcher button {
-        box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        border-radius: 15px !important;
-        margin-top: 7px;
-        margin-bottom: 0px;
-        overflow: hidden;
-        padding: 5px 10px;
-        margin-left: 5px;
-        cursor: pointer;
-        font-size: 17px;
-        background-color: #f8f9fa;
-        border: 1px solid #dee2e6;
-        color: #000000;
-        transition: background-color 0.3s, opacity 0.3s;
-      }
-
-      .language-switcher button.active {
-        background-color: #d5f0f2;
-      }
     </style>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <script>
-      let currentLang = "ru";
+      window.currentLang = "ru";
 
-      function switchLanguage(lang) {
-        currentLang = lang;
-        document
-          .querySelectorAll(".language-switcher button")
-          .forEach((button) => {
-            button.classList.remove("active");
-          });
-        document
-          .querySelector(
-            `.language-switcher button[onclick="switchLanguage('${lang}')"]`
-          )
-          .classList.add("active");
+      function detectLanguage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const urlLang = urlParams.get('lang');
+        if (urlLang === 'en' || urlLang === 'ru') return urlLang;
 
-        document
-          .querySelectorAll("[data-lang-ru], [data-lang-en]")
-          .forEach((element) => {
-            const text = element.getAttribute(`data-lang-${lang}`);
-            if (text) {
-              element.textContent = text;
-            }
-          });
+        try {
+          const tgLang = window.Telegram?.WebApp?.initDataUnsafe?.user?.language_code;
+          if (tgLang) return tgLang.startsWith('ru') ? 'ru' : 'en';
+        } catch (e) {
+          console.warn('Telegram error:', e);
+        }
+
+        const browserLang = (navigator.language || 'ru').toLowerCase();
+        const russianLanguageCodes = ['ru', 'ru-ru', 'ru_ru', 'by', 'kz', 'kg', 'uz'];
+        return russianLanguageCodes.some(code => browserLang.includes(code)) ? 'ru' : 'en';
+      }
+
+      function updateContentLanguage(lang) {
+        window.currentLang = lang;
+        document.documentElement.lang = lang;
+        document.querySelectorAll("[data-lang-ru], [data-lang-en]").forEach(element => {
+          const text = element.getAttribute(`data-lang-${lang}`);
+          if (text) element.textContent = text;
+        });
       }
 
       document.addEventListener("DOMContentLoaded", () => {
-        switchLanguage("ru");
+        const lang = detectLanguage();
+        updateContentLanguage(lang);
+        
+        try {
+          if (window.Telegram?.WebApp) {
+            Telegram.WebApp.ready();
+            Telegram.WebApp.expand();
+          }
+        } catch (e) {
+          console.warn('Telegram init error:', e);
+        }
       });
     </script>
     <script>
@@ -848,20 +832,33 @@
     </script>
     <script>
       function showNotification() {
-        const notificationId = currentLang === "ru" ? "toast-ru" : "toast-en";
-        const notification = document.getElementById(notificationId);
-        notification.classList.add("show");
-        setTimeout(() => {
-          notification.classList.remove("show");
-        }, 2900);
+        const notification = document.getElementById(`toast-${window.currentLang}`);
+        if (notification) {
+          notification.classList.add("show");
+          setTimeout(() => notification.classList.remove("show"), 2900);
+        }
       }
 
       function copyToClipboard() {
         const url = new URL(window.location.href);
-        const baseUrl = url.origin + url.pathname;
-        navigator.clipboard.writeText(baseUrl);
-        showNotification();
+        const cleanUrl = url.origin + url.pathname;
+
+        if (!navigator.clipboard) {
+          alert(window.currentLang === 'ru' ? 'Копирование недоступно' : 'Copy unavailable');
+          return;
+        }
+
+        navigator.clipboard.writeText(cleanUrl)
+          .then(showNotification)
+          .catch(err => {
+            console.error('Copy error:', err);
+            alert(window.currentLang === 'ru' ? 'Ошибка' : 'Error');
+          });
       }
+
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelector('.copy-btn')?.addEventListener('click', copyToClipboard);
+      });
     </script>
     <script>
       function getParameterByName(name, url = window.location.href) {
@@ -879,6 +876,6 @@
       }
     </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'91de4183ba67bd3c',t:'MTc0MTU2MTkzMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9244f169ae0cbe15',t:'MTc0MjYzODY4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9244f169ae0cbe15',t:'MTc0MjYzODY4NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>  
   </body>
 </html>
